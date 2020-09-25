@@ -10,16 +10,16 @@
    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
   <title>About 19th: Graduated</title>
-  <link rel="stylesheet" href="dist/webstyle.css">
+  <link rel="stylesheet" href="dist/style2.css">
   <script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
 <body>
 <!-- partial:index.partial.html -->
 <h1>毕业撒花</h1>
+<img src="img/hat.png" width="10%">
 <!--<img src="img/h1.png" />-->
-<p></p>
 <div id = "container">
-  <div id = "first">
+  <div class="place">
     <h2>少儿19班学业状态分布（2020年）</h2>
     <p class="hint">点击查看具体信息</p>
     <svg id = "pieChart">
@@ -27,41 +27,83 @@
     <div class ="tooltip">Tooltip</div>
     <div id = "people"></div>
     <div id = "pieName"></div>
+    <div class="explain">#说是毕业<br>其实今年也只有半数毕业生而已#</div>
   </div>
 
-  <div>
+  <div class="place">
+
     <h2>少儿19班就读国家分布</h2>
     <p class="hint">点击查看具体信息</p>
     <p></p>
     <svg id = "barChart"></svg>
     <div id = "peopleBar"></div>
     <div id = "barName"></div>
+    <div class="explain">#数据更新了几回<br>眼见“美国”的柱子一点点缩短#</div>
   </div>
-
-  <div>
+<!-- <HR align=center style="border:1 dashed #777777" size = 1> -->
+  <div class="place">
     <h2>美国留学去向分布</h2>
     <p class="hint">点击查看具体信息</p>
     <p></p>
     <svg id = "map"></svg>
     <p id = "maphint" >注：美国地图部分地区未显示</p>
+    <div class="explain">#在美国的同学literally四面八方<br>最近的“邻居”也相隔上百公里#</div>
   </div>
-
-  <div>
-    <h2>专业选择</h2>
-    <p></p>
-    <svg id = "sanKey"></svg>
+  <div id="end">
+  	不知道写什么结尾<br>那就给大家拜个早年吧！
   </div>
+  <img src="img/graduate-2.png" width="10%">
 </div>
+<footer id="footer">
+	<p>设计开发：32</p>
+	<p>数据来源：班级内部信息共享</p>
+	<p>更新日期：2020年9月24日</p>
+	<p>道听途说，仅供参考；如有错漏，欢迎指正</p>
+</footer>
 <!-- partial -->
   
 </body>
   <script>
 
+var windowWidth = $(window).width()
+var windowHeight = $(window).height()
+console.log(windowWidth)
+var mar 
+var size
+var endSize
+if (windowWidth > 640) {
+  size = 180
+  endSize = 50
+  mar = (windowHeight - size)/2-90
+  //mar = (windowHeight - size)/2
+} else if (windowWidth <= 320) {
+  size = 120
+  endSize = 25
+  //mar = (windowWidth - size)/2 + 50
+  mar = (windowHeight - size)/2 - 80-40
+} else{
+  size = 150
+  endSize = 30
+  //mar = (windowWidth - size)/2 + 50
+  mar = (windowHeight - size)/2 - 100-40
+}
+//mar = (windowHeight - size)/2
+console.log(mar)
+
+var fontSize = (windowWidth<=320?"30px":"35px")
+$("h1").css("margin-top", mar+"px").css({"margin-bottom": mar+"px"}).css({"font-family": "NaHan"}).css({"font-size": size + "px"})
+$(".place").css("height", windowHeight)
+$("h2").css("font-size", fontSize)
+$("#footer").css("font-family", "XiYuan").css("font-size", "12px").css("padding", "3px").css("color", "white")
+$(".explain").css("margin-top", (windowWidth<=320?"25px":"50px")).css("width", width*2/3).css("line-height", "30px").css("font-size", (windowWidth<=320?"13px":"16px"))
+$("#end").css("height", "100px").css({"font-family": "NaHan"}).css("font-size", endSize + "px").css("margin-bottom", (windowWidth>640?200:100))
+//$("HR").css("width", windowWidth/3)
+
 function loadData(){
       return Promise.all([
-        d3.csv("dist/future_19.csv"),
+        d3.csv("dist/future_19_new.csv"),
         d3.json("dist/us-states-edited.json"),
-        d3.csv("dist/usuniversities.csv")
+        d3.csv("dist/usuniversities_new.csv")
       ]).then(datasets => {
           futData = datasets[0];
           geoJson = datasets[1];
@@ -96,24 +138,7 @@ function groupByFuture(data){
 
         static.count += 1
         static.name.push(" " +d.name)
-/*
-        if (static.future === "本科"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.future === "读研"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.future === "读博"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.future === "Gap"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-*/       
+       
         result[d.future] = static
         //console.log(result)
         return result;
@@ -123,16 +148,29 @@ function groupByFuture(data){
 
       return result
     }
+    var width = (windowWidth>640?windowWidth/3:windowWidth);
+    //var height = windowHeight/2;
+      //var width = 400;
+      var height = (windowWidth<=320?250:300);
+      var margin
 
-      var width = 400;
-      var height = 300;
-      var margin = {
-        top: 10,
-        bottom: 10,
-        left: 50,
-        right: 50
-      }
-
+      if (windowWidth > 640) {
+      	  width = windowWidth/3
+		  margin = {top:10, bottom: 10, left:50, right: 50}
+		} else if (windowWidth <= 320){
+		  width = windowWidth - 20
+		  margin = {top:10, bottom: 10, left:50, right: 30}
+		} else {
+		  margin = {top:10, bottom: 10, left:(width-300)/2, right: (width-300)/2}
+		} 
+      // var margin = {
+      //   top: 10,
+      //   bottom: 10,
+      //   left: (width - 260)/3,
+      //   right: (width - 260)/3
+      // }
+      //var bodyHeight = height
+     //var bodyWidth = width
       var bodyHeight = height - margin.top - margin.bottom
       var bodyWidth = width - margin.left - margin.right
 
@@ -155,7 +193,7 @@ function drawPieChart(data){
       }))
       //console.log(data)
 
-      var arcGenerator = d3.arc().outerRadius(bodyHeight/2).innerRadius(100)
+      var arcGenerator = d3.arc().outerRadius((windowWidth<=320?100:140)).innerRadius((windowWidth<=320?70:100))
 
       var pieGenerator = d3.pie().value(d => d.count)
 
@@ -163,8 +201,17 @@ function drawPieChart(data){
 
       var arcData = pieGenerator(data)
 
+      var pointStart = d3.arc()
+      .innerRadius(140)
+      .outerRadius(140)
+    //饼图与文字相连的曲线终点
+      var radiusIn = (windowWidth <= 320?-50:40)
+      var pointEnd = d3.arc()
+      .innerRadius(140 + radiusIn)
+      .outerRadius(140 )
+
       var colorScale = d3.scaleOrdinal()
-      					.range(["#65a9cc", "#8accba", "#c28fb7", "#daa079"])
+      					.range(["#65a9cc", "#8accba","#daa079", "#c28fb7" ])
       					.domain(data.map(d => d.future))
 
       //console.log(colorScale("本科"))
@@ -179,7 +226,7 @@ function drawPieChart(data){
       				return colorScale(d.data.future)
       			})
       			//.style("filter", "url(#drop-shadow)")
-      			.attr("transform", "translate(" + width/2 +", " + height/2 + ")")
+      			.attr("transform", "translate(" + width/2 +", " + (height/2+10) + ")")
       			.on("mouseover", function(d){
       				d3.select(this)
       				if (d.data.future === "本科") {
@@ -236,7 +283,7 @@ function drawPieChart(data){
                 this.style.fill = "#e2af8e"
                 text = "选择Gap"
               }
-      				id1 = "#people"
+      		  id1 = "#people"
               id2 = "#pieName"
               count = d.data.count
               name = d.data.name
@@ -272,21 +319,74 @@ function drawPieChart(data){
       				d3.select("#people").text(null)
       			})
 
+      var textX
+      var textY
+      if (windowWidth > 640) {
+      	textX = 50
+      	textY = 30
+      } else if(windowWidth <= 320){
+      	textX = 40
+      	textY = 25
+      } else if (windowWidth <= 375) {
+      	textX = 35
+      	textY = 30
+      }else{
+      	textX = 53
+      	textY = 30
+      }
+
+      container.append('g')
+      .attr('transform', 'translate( ' + (bodyWidth/2+textX) + ', ' + (bodyHeight/2+textY) + ' )')
+      .selectAll('path')
+      .data(arcData)
+      .enter()
+      .append('text')
+      .text(function(d) {
+        return d.data.future
+      })
+      .attr('x', function(d) {
+        return pointEnd.centroid(d)[0]
+      })
+      .attr('y', function(d) {
+        return pointEnd.centroid(d)[1]
+      })
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '12px')
+      .style("font-family", "ZhHei")
+
 
     }
 
 function showTooltip(text, coords, name, count){
-    	d3.select(".tooltip").text("少儿19班2020年" + text + "的人数为" + count + "人")	
+	var tooltip = d3.select(".tooltip")
+    	tooltip.text("少儿19班" + text + "的人数为" + count + "人")
+    		.style("left", function(){
+    			var left
+    			if(windowWidth>640){
+    				left = coords[0] + 15 + "px"
+    			} else if( coords[0] + 15 + 150 > windowWidth){
+    				left = (windowWidth - 150)+"px"
+    			} else{
+    				left = coords[0] + 15 + "px"
+    			}
+    			return left
+    		})
+    		
     		.style("top", coords[1] + 10 + "px")
-    		.style("left", coords[0] + 15 + "px")
+    		//.style("left", coords[0] + 15 + "px")
     		.style("display", "block")
 
+}
+   
+         
+        
     	//d3.select("#people").text("学号为：")
     	//d3.select("#pieName").text(name)
-    }
+ 
 function showName(id1, id2, name) {
       d3.select(id1).text("学号为：")
       d3.select(id2).text(name)
+      $(id2).css("width", width*2/3).css("margin", "0 auto")
 }
 
 function groupByCountry(data){
@@ -300,25 +400,7 @@ function groupByCountry(data){
 
         static.count += 1
         static.name.push(" " +d.name)
-/*
-        if (static.country === "China"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.country === "United States"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.country === "Singapore"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        if (static.country === "Netherlands"){
-          static.count += 1
-          static.name.push(" " +d.name)
-        }
-        
-*/        
+     
         result[d.country] = static
         //console.log(result)
         return result;
@@ -342,7 +424,6 @@ function drawBarChart(data) {
 
       var max = d3.max(data, d => d.count)
 
-      //var subgroup = ["country","status"]
 
       var xScale = d3.scaleLinear()
                         .range([0, 250])
@@ -355,32 +436,31 @@ function drawBarChart(data) {
 
       var yAxis = d3.axisLeft(yScale).ticks(4)
 
+      var barMar
+      if (windowWidth>640) {
+      	barMar = 100
+      } else if(windowWidth <= 320){
+      	barMar = 45
+      } else if (windowWidth <=375){
+      	barMar = 70
+      } else {
+      	barMar = 90
+      }
       container.append("g")
-                    .style("transform", 
-                        `translate(${margin.left + 28}px,${margin.top+20}px)`
-                    )
+      				.attr("transform", "translate(" + barMar +", " + (margin.top+10) + ")")
+                    // .style("transform", 
+                    //     `translate(${margin.left + 28}px,${margin.top+20}px)`
+                    // )
                     .call(yAxis)
                     .style("color", "#efdea9")
 
 
       container.selectAll("text")
                     .style("color", "black")
-                    .style("font-family", "Times New Roman")
-/*
-      var color = d3.scaleOrdinal()
-			    .domain(subgroup)
-			    .range(["#a3c3cc","#65a9cc"])
+                    .style("font-family", "ZhHei")
+                    .attr('font-size', '12px')
 
-      var stackedData = d3.stack()
-					      .keys(subgroup)
-					      (data)
-*/
-      container//.append("g")
-              //.selectAll("g")
-              //.data(stackedData)
-              //.enter()
-              //.append("g")
-              //.attr("fill", d => color(d.count)
+      container
               .selectAll("rect")
               .data(data)
               .enter()
@@ -389,33 +469,34 @@ function drawBarChart(data) {
               .attr("height", yScale.bandwidth())
               .attr("y", (d) => yScale(d.country))
               .attr("fill", d => colorScale(d.country))
-              .attr("transform", "translate(80, 30)")
+              .attr("transform", "translate(" + barMar +", " + (margin.top+10)  + ")")
+              //.attr("transform", "translate(80, 30)")
               .on("mouseover", function(d){
               d3.select(this)
-              if (d.country === "China") {
+              if (d.country === "中国") {
                 
                 this.style.fill = "#78b8da"
                 text = "留在中国"
                 
               }
-              if (d.country === "United States") {
+              if (d.country === "美国") {
                 //d3.select(this)
                 this.style.fill = "#a0d5c7"
                 text = "留学美国"
 
               }
-              if (d.country === "United Kingdom") {
+              if (d.country === "英国") {
                 //d3.select(this)
                 this.style.fill = "#cca0c2"
                 text = "留学英国"
               }
 
-              if (d.country === "Singapore") {
+              if (d.country === "新加坡") {
                 //d3.select(this)
                 this.style.fill = "#e2af8e"
                 text = "留学新加坡"
               }
-              if (d.country === "Netherlands") {
+              if (d.country === "荷兰") {
                 //d3.select(this)
                 this.style.fill = "#9e95c2"
                 text = "留学荷兰"
@@ -432,30 +513,30 @@ function drawBarChart(data) {
             })
               .on("mousemove", function(d){
               d3.select(this)
-              if (d.country === "China") {
+              if (d.country === "中国") {
                 
                 this.style.fill = "#78b8da"
                 text = "留在中国"
                 
               }
-              if (d.country === "United States") {
+              if (d.country === "美国") {
                 //d3.select(this)
                 this.style.fill = "#a0d5c7"
                 text = "留学美国"
 
               }
-              if (d.country === "United Kingdom") {
+              if (d.country === "英国") {
                 //d3.select(this)
                 this.style.fill = "#cca0c2"
                 text = "留学英国"
               }
 
-              if (d.country === "Singapore") {
+              if (d.country === "新加坡") {
                 //d3.select(this)
                 this.style.fill = "#e2af8e"
                 text = "留学新加坡"
               }
-              if (d.country === "Netherlands") {
+              if (d.country === "荷兰") {
                 //d3.select(this)
                 this.style.fill = "#9e95c2"
                 text = "留学荷兰"
@@ -470,30 +551,30 @@ function drawBarChart(data) {
               showName(id1, id2, name)
             })
               .on("mouseout", function(d){
-              if (d.country === "China") {
+              if (d.country === "中国") {
                 d3.select(this)
                 this.style.fill = "#65a9cc"
                 
                     
               }
-              if (d.country === "United States") {
+              if (d.country === "美国") {
                 d3.select(this)
                 this.style.fill = "#8accba"
                 
                     
               }
-              if (d.country === "United Kingdom") {
+              if (d.country === "英国") {
                 d3.select(this)
                 this.style.fill = "#c28fb7"
           
                     
               }
-              if (d.country === "Singapore") {
+              if (d.country === "新加坡") {
                 d3.select(this)
                 this.style.fill = "#daa079"
                 
               }
-              if (d.country === "Netherlands") {
+              if (d.country === "荷兰") {
                 d3.select(this)
                 this.style.fill = "#9586be"
                 
@@ -584,12 +665,25 @@ function drawMap(data, usData) {
 
 	var container = d3.select("#map")
 
+	var mapHeight = (windowWidth>640? 30: 50)
 	container.attr("width", width)
-			.attr("height", height)
+			.attr("height", height-mapHeight)
 
+	var mapPo
+	var mapScale
+	if (windowWidth>640) {
+		mapPo = [850, 425]
+		mapScale = 380
+	} else if (windowWidth<=320) {
+		mapPo = [655, 330]
+		mapScale = 300
+	} else {
+		mapPo = [700, 325]
+		mapScale = 300
+	}
 	var projection = d3.geoMercator()
-						.scale(380)
-						.translate([835, 425])
+						.scale(mapScale)
+						.translate(mapPo)
 
 	var path = d3.geoPath().projection(projection)
 
@@ -618,16 +712,35 @@ function mapOver(d) {
     coords = [d3.event.pageX, d3.event.pageY]
 
     d3.select(".tooltip")
-      .text("2020年将就读于" + d.properties.name + "州的有:" + d.properties.people)
+      .text("将就读于" + d.properties.name + "州的有:" + d.properties.people)
       .style("top", coords[1] + 10 + "px")
-      .style("left", coords[0] + 15 + "px")
-      .style("display", "block")
+      .style("left", function(){
+    			var left
+    			if(windowWidth>640){
+    				left = coords[0] + 15 + "px"
+    			} else if( coords[0] + 15 + 150 > windowWidth){
+    				left = (windowWidth - 150)+"px"
+    			} else{
+    				left = coords[0] + 15 + "px"
+    			}
+    			return left
+    		})	
   }else {
     coords = [d3.event.pageX, d3.event.pageY]
     d3.select(".tooltip")
       .text(d.properties.name + "州暂时没有少儿19班同学")
       .style("top", coords[1] + 10 + "px")
-      .style("left", coords[0] + 15 + "px")
+      .style("left", function(){
+    			var left
+    			if(windowWidth>640){
+    				left = coords[0] + 15 + "px"
+    			} else if( coords[0] + 15 + 150 > windowWidth){
+    				left = (windowWidth - 150)+"px"
+    			} else{
+    				left = coords[0] + 15 + "px"
+    			}
+    			return left
+    		})	
       .style("display", "block")
 
   }
@@ -641,16 +754,36 @@ function mapMove(d) {
     coords = [d3.event.pageX, d3.event.pageY]
 
     d3.select(".tooltip")
-      .text("2020年将就读于" + d.properties.name + "州的有:" + d.properties.people)
+      .text("将就读于" + d.properties.name + "州的有:" + d.properties.people)
       .style("top", coords[1] + 10 + "px")
-      .style("left", coords[0] + 15 + "px")
+     .style("left", function(){
+    			var left
+    			if(windowWidth>640){
+    				left = coords[0] + 15 + "px"
+    			} else if( coords[0] + 15 + 150 > windowWidth){
+    				left = (windowWidth - 150)+"px"
+    			} else{
+    				left = coords[0] + 15 + "px"
+    			}
+    			return left
+    		})	
       .style("display", "block")
   }else {
     coords = [d3.event.pageX, d3.event.pageY]
     d3.select(".tooltip")
       .text(d.properties.name + "州暂时没有同学")
       .style("top", coords[1] + 10 + "px")
-      .style("left", coords[0] + 15 + "px")
+      .style("left", function(){
+    			var left
+    			if(windowWidth>640){
+    				left = coords[0] + 15 + "px"
+    			} else if( coords[0] + 15 + 150 > windowWidth){
+    				left = (windowWidth - 150)+"px"
+    			} else{
+    				left = coords[0] + 15 + "px"
+    			}
+    			return left
+    		})	
       .style("display", "block")
 
   }
